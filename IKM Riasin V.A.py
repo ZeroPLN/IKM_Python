@@ -182,7 +182,9 @@ def parsing_polynomial(input_str: str) -> tuple['PolynomialList', str]:
         except ValueError:
             print(f"Ошибка парсинга: '{term}'")
             continue
-
+        
+        poly.push(coef, degree)
+        
     return poly, variable
 
 # Функция для ввода данных
