@@ -110,7 +110,7 @@ def parsing_polynomial(input_str: str) -> tuple['PolynomialList', str]:
     input_str = input_str.replace(' ', '')
     if not input_str:
         print("Пустой ввод!")
-        return PolynomialList(), 'y'
+        return None, None
 
     # Определяем переменную (первая буква)
     variable = 'y'
@@ -123,7 +123,7 @@ def parsing_polynomial(input_str: str) -> tuple['PolynomialList', str]:
     for ch in input_str:
         if ch.isalpha() and ch != variable:
             print(f"Ошибка: обнаружена вторая переменная '{ch}' (разрешена только одна переменная! например: '{variable}')")
-            return PolynomialList(), variable
+            return None, None
 
     input_str = input_str.lower().replace('-', '+-')
     terms = input_str.split('+')
@@ -136,25 +136,25 @@ def parsing_polynomial(input_str: str) -> tuple['PolynomialList', str]:
         # Проверка на некорректные случаи
         if term.count(variable) > 1:
             print(f"Ошибка: некорректный формат слагаемого '{term}' (двойная переменная)")
-            continue
+            return None, None
         if term.count('^') > 1:
             print(f"Ошибка: некорректный формат слагаемого '{term}' (двойная степень)")
-            continue
+            return None, None
         if '^' in term and variable not in term:
             print(f"Ошибка: некорректный формат слагаемого '{term}' (степень без переменной)")
-            continue
+            return None, None
         if '^' in term and term.index('^') < term.index(variable):
             print(f"Ошибка: некорректный формат слагаемого '{term}' (степень до переменной)")
-            continue
+            return None, None
         if '^' in term and term.endswith('^'):
             print(f"Ошибка: некорректный формат слагаемого '{term}' (нет степени после ^)")
-            continue
+            return None, None
         if variable in term and '^' in term:
             idx_var = term.index(variable)
             idx_pow = term.index('^')
             if idx_pow != idx_var + 1:
                 print(f"Ошибка: некорректный формат слагаемого '{term}' (неправильное расположение ^)")
-                continue
+                return None, None
             if idx_var == 0 and (len(term) == 1 or term[0] == variable):
                 coef = 1
             else:
@@ -181,7 +181,7 @@ def parsing_polynomial(input_str: str) -> tuple['PolynomialList', str]:
             degree = int(degree)
         except ValueError:
             print(f"Ошибка парсинга: '{term}'")
-            continue
+            return None, None
         
         poly.push(coef, degree)
         
@@ -220,6 +220,9 @@ def main() -> None:
     input_string = input_data(filename)
     
     poly, variable = parsing_polynomial(input_string)
+    if poly is None or variable is None:
+        print("Ошибка при парсинге многочлена. Выполнение программы остановленно!")
+        return
 
     poly.combine_like_terms()
     poly.bubble_sort()
