@@ -193,14 +193,25 @@ def input_data(filename: str) -> str:
         n = input("Выберите способ ввода данных: \n1 - Загрузить из файла " \
         "\n2 - Ввод с клавиатуры\nВыберите номер-> ")
         if n == "1":
-            data = read_file(filename)
-            print(f"Исходный многочлен из файла: {data}")
-            return data
+            try:
+                data = read_file(filename)
+                if not data:
+                    print("Файл пустой или не содержит данных. Попробуйте снова.")
+                    continue
+                print(f"Исходный многочлен из файла: {data}")
+                return data
+            except FileNotFoundError:
+                print(f"Файл '{filename}' не найден. Попробуйте снова.")
+            except Exception as e:
+                print(f"Ошибка при чтении файла: {e}. Попробуйте снова.")
         elif n == "2":
-            expr = str(input(
+            expr = input(
                 "Введите строку с одним неизвестным "\
                 "(в виде 52y^10 - 3y^8 + y - y + 5) -> "
-                    ))
+            ).strip()
+            if not expr:
+                print("Ввод не может быть пустым. Попробуйте снова.")
+                continue
             return expr
         else:
             print("Введите цифру 1 или 2!")
@@ -217,23 +228,32 @@ def read_file(filename: str) -> str:
 # Главная функция программы
 def main() -> None:
     filename = "D:\\programming projects\\Python\\Education\\IKM py\\2 semestr\\Polynom.txt"
-    input_string = input_data(filename)
     
-    poly, variable = parsing_polynomial(input_string)
-    if poly is None or variable is None:
-        print("Ошибка при парсинге многочлена. Выполнение программы остановленно!")
-        return
+    while True:
+        input_string = input_data(filename)
+        if not input_string:
+            continue
+            
+        poly, variable = parsing_polynomial(input_string)
+        if poly is None or variable is None:
+            print("Ошибка при парсинге многочлена. Пожалуйста, введите многочлен снова.")
+            continue
 
-    poly.combine_like_terms()
-    poly.bubble_sort()
+        poly.combine_like_terms()
+        poly.bubble_sort()
 
-    result = poly.list_to_string(variable)
+        result = poly.list_to_string(variable)
 
-    print(f"\nКонечный результат после приведения и сортировки: {result}")
+        print(f"\nКонечный результат после приведения и сортировки: {result}")
 
-    # Запись результата в файл
-    with open(filename, "a") as file:
-        file.write("\n" + result)
+        # Запись результата в файл
+        try:
+            with open(filename, "a") as file:
+                file.write("\n" + result)
+            print("Результат успешно записан в файл.")
+            break
+        except Exception as e:
+            print(f"Ошибка при записи в файл: {e}. Попробуйте снова.")
 
 if __name__ == "__main__":
     main()
