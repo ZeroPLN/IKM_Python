@@ -218,12 +218,39 @@ def input_data(filename: str) -> str:
 
 # Функция для считывания данных из файла
 def read_file(filename: str) -> str:
-    with open(filename, "r") as f:
-        expression = f.readline().strip()
-        if not expression:
-            print("Файл пустой!")
-            return ""
-        return expression
+    try:
+        with open(filename, "r") as f:
+            expression = f.readline().strip()
+            if not expression:
+                print("Файл пустой!")
+                return ""
+            return expression
+    except FileNotFoundError:
+        print(f"Файл '{filename}' не найден. Будет создан новый файл.")
+        return ""
+    except Exception as e:
+        print(f"Ошибка при чтении файла: {e}")
+        return ""
+
+# Функция для записи результата в файл
+def write_to_file(filename: str, result: str) -> None:
+    try:
+        # Проверяем существование файла
+        try:
+            with open(filename, "r") as f:
+                content = f.read()
+        except FileNotFoundError:
+            content = ""
+        
+        # Записываем результат
+        with open(filename, "a") as file:
+            if content:  # Если файл не пустой, добавляем перенос строки
+                file.write("\n" + result)
+            else:  # Если файл пустой, записываем без переноса
+                file.write(result)
+        print("Результат успешно записан в файл.")
+    except Exception as e:
+        print(f"Ошибка при записи в файл: {e}")
 
 # Главная функция программы
 def main() -> None:
@@ -247,13 +274,8 @@ def main() -> None:
         print(f"\nКонечный результат после приведения и сортировки: {result}")
 
         # Запись результата в файл
-        try:
-            with open(filename, "a") as file:
-                file.write("\n" + result)
-            print("Результат успешно записан в файл.")
-            break
-        except Exception as e:
-            print(f"Ошибка при записи в файл: {e}. Попробуйте снова.")
+        write_to_file(filename, result)
+        break
 
 if __name__ == "__main__":
     main()
