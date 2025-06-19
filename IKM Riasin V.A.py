@@ -227,7 +227,7 @@ def read_file(filename: str) -> str:
 
 # Главная функция программы
 def main() -> None:
-    filename = "D:\\programming projects\\Python\\Education\\IKM py\\2 semestr\\Polynom.txt"
+    filename = "Polynom.txt"
     
     while True:
         input_string = input_data(filename)
